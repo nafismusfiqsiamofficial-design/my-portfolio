@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FlowPilot AI — Smart Social Media Workflow Assistant</title>
+<style>
+:root{--navy:#101f39;--navy2:#172b4d;--or:#f0784b;--bg:#f3f4f8;--card:#fff;--ink:#182338;--mut:#667085;--line:#e4e7ee;--ok:#16a34a;--err:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d1526;--card:#16223a;--ink:#e8edf6;--mut:#9aa8c0;--line:#27365a;color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--navy);color:#cbd5e6;padding:20px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+.logo{font-weight:850;font-size:19px;color:#fff;padding:0 10px 4px;letter-spacing:-.03em}.logo span{color:var(--or)}.tag{font-size:10px;padding:0 10px 18px;color:#8da0c0}
+nav button{display:flex;gap:10px;width:100%;text-align:left;background:none;border:0;color:inherit;padding:10px;border-radius:10px;font:inherit;cursor:pointer;transition:.15s}
+nav button:hover{background:rgba(255,255,255,.07)}nav button.on{background:var(--or);color:#fff;font-weight:700}
+main{padding:22px 26px 60px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}h1{font-size:23px;margin:0;letter-spacing:-.03em}
+.badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:#fff1ea;color:#c2410c}
+.demo{background:#fef3c7;color:#92400e}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 6px 20px rgba(16,31,57,.05)}
+.card h3{margin:0 0 8px;font-size:15px}.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+label{display:block;font-size:12px;font-weight:700;margin:10px 0 4px}input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--ink)}
+input.bad,select.bad,textarea.bad{border-color:var(--err)}.msg{font-size:11px;color:var(--err);min-height:14px}
+textarea{min-height:80px;resize:vertical}
+.btn{background:var(--or);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer;transition:.15s}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.sec{background:var(--navy);}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:5px 10px;font-size:11px}.btn:disabled{opacity:.5;cursor:wait}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:6px 12px;border:1px solid var(--line);border-radius:99px;cursor:pointer;font-size:12px;user-select:none}.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}.step{flex:1;min-width:110px;padding:9px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:11px;font-weight:700;text-align:center;color:var(--mut)}.step.done{border-color:var(--ok);color:var(--ok)}.step.cur{border-color:var(--or);color:var(--or)}
+.note{padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:12px}.n-info{background:#eaf1ff;color:#1d4ed8}.n-ok{background:#e8f8ee;color:#15803d}.n-err{background:#fde8e8;color:#b91c1c}
+pre.out{white-space:pre-wrap;font:inherit;margin:0;word-break:break-word}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}.day{border-top:4px solid var(--or)}.day b{color:var(--or)}.day small{display:block;color:var(--mut)}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid #fff6;border-top-color:#fff;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
+.load{color:var(--mut);padding:10px 0}.pill{font-size:10px;padding:2px 8px;border-radius:99px;background:var(--bg);margin-right:4px}
+.kv{margin:6px 0}.kv b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+@media(max-width:760px){.app{grid-template-columns:1fr}aside{position:static;height:auto;padding:12px}nav{display:flex;overflow-x:auto;gap:4px}nav button{white-space:nowrap;width:auto}.tag{padding-bottom:8px}main{padding:16px 14px 50px}}
+</style></head><body>
+<div class="app"><aside><div class="logo">Flow<span>Pilot</span> AI</div><div class="tag">Smart Social Media Workflow Assistant</div><nav id="nav"></nav></aside>
+<main><div class="top"><h1 id="title"></h1><span id="status"></span></div><div id="view"></div></main></div>
+<script>
+const VIEWS=[["overview","Overview"],["builder","Campaign Builder"],["studio","Content Studio"],["calendar","Content Calendar"],["captions","Caption Generator"],["hashtags","Hashtag Assistant"],["replies","AI Reply Assistant"],["export","Export Center"],["about","Settings / About"]];
+const PLATS=["Facebook","Instagram","LinkedIn","TikTok"],LANGS=["English","Bangla","Bangla + English"];
+const DEMO_BRIEF={name:"MORROW & CO.",industry:"Specialty coffee & café",product:"Single-origin coffee and pastries",desc:"Premium specialty coffee and contemporary café with a calm co-working corner.",audience:"Young professionals and students, 20–35",market:"Dhaka, Bangladesh",objective:"Drive foot traffic for a new seasonal menu",platforms:["Facebook","Instagram"],lang:"Bangla + English",tone:"Warm and premium",duration:"7 days",offer:"Free pastry with any 2 coffees",cta:"Visit us this week"};
+let S={brief:null,demo:false,strategy:null,content:null,calendar:null,captions:null,hashtags:null,replies:null,repurpose:null,view:"overview",busy:{},msg:null};
+let sample=null,downloads=null;
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?"":t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function flat(v){return typeof v==="string"?v:Array.isArray(v)?v.map(flat).join("\n"):v&&typeof v==="object"?Object.entries(v).map(([k,x])=>k+": "+flat(x)).join("\n"):String(v==null?"":v)}
+function briefText(b){return `Business: ${b.name}\nIndustry: ${b.industry}\nProduct/service: ${b.product}\nDescription: ${b.desc}\nAudience: ${b.audience}\nMarket: ${b.market}\nObjective: ${b.objective}\nPlatforms: ${b.platforms.join(", ")}\nLanguage: ${b.lang}\nTone: ${b.tone}\nDuration: ${b.duration}\nOffer: ${b.offer||"none"}\nCTA: ${b.cta||"your choice"}`}
+async function ai(prompt,key){
+  if(!sample)throw {message:"Claude is not available in this view. Open the artifact in claude.ai while signed in."};
+  S.busy[key]=1;render(true);
+  try{return await sample.json("You are FlowPilot AI, a social media marketing expert. Reply with ONLY valid JSON as specified. Never promise views, rankings or sales. Write in the requested language (Bangla means Bengali script).\n\n"+prompt)}
+  catch(e){throw {message:e.code==="rate_limited"?"Usage limit reached. Please wait a moment.":e.code==="not_granted"?"Permission to use Claude was declined.":(e.message||"Generation failed.")}}
+  finally{delete S.busy[key];}
+}
+function setMsg(t,k){S.msg={t,k};}
+async function run(key,fn){try{await fn();setMsg("Generated successfully by Claude.","n-ok")}catch(e){setMsg(e.message,"n-err")}render()}
+const B=()=>S.brief;
+/* ---------- generators ---------- */
+const gStrategy=()=>run("strategy",async()=>{S.strategy=await ai(`${briefText(B())}\n\nReturn JSON: {"overview":str,"audience":str,"positioning":str,"message":str,"contentStrategy":str,"pillars":[str x4-5],"objectives":[str x3-4]}`,"strategy")});
+const gContent=()=>run("content",async()=>{S.content=await ai(`${briefText(B())}\nStrategy message: ${S.strategy?.message||""}\n\nWrite platform-specific content ONLY for these platforms: ${B().platforms.join(", ")}. Return JSON object keyed by platform name. Facebook:{"captions":[2],"promo":str,"educational":str,"ctas":[3]}. Instagram:{"captions":[2],"reel":str,"carousel":[5 slide ideas],"hashtagGroups":[[tags]x2]}. LinkedIn:{"brandPost":str,"businessPost":str,"thoughtLeadership":str}. TikTok:{"concepts":[3],"hooks":[3],"script":str,"captions":[2]}.`,"content")});
+const gCalendar=()=>run("calendar",async()=>{S.calendar=await ai(`${briefText(B())}\n\nCreate a realistic 7-day content calendar using only: ${B().platforms.join(", ")}. Return JSON array of 7 objects: {"day":"Day 1","platform":str,"type":str,"topic":str,"caption":str (short summary),"visual":str,"objective":str,"cta":str}`,"calendar")});
+async function regenDay(i){const k="day"+i;await run(k,async()=>{const d=await ai(`${briefText(B())}\nRewrite calendar entry ${S.calendar[i].day} with a fresh idea, different from: ${S.calendar[i].topic}. Return one JSON object with keys day,platform,type,topic,caption,visual,objective,cta.`,k);S.calendar[i]={...d,day:S.calendar[i].day}})}
+async function fullFlow(){await gStrategy();if(S.strategy){await gContent();await gCalendar()}}
+/* ---------- views ---------- */
+function steps(){const d=[!!B(),!!S.strategy,!!S.content,!!S.content,!!S.calendar,false],n=["Brief","AI Strategy","Content","Review & Refine","Calendar","Export"];const cur=d.findIndex(x=>!x);return `<div class="steps">${n.map((x,i)=>`<div class="step ${d[i]?"done":i===cur?"cur":""}">${d[i]?"✓ ":""}${x}</div>`).join("")}</div>`}
+function loading(k){return S.busy[k]?`<div class="load"><span class="spin" style="border-color:#0003;border-top-color:var(--or)"></span>Waiting for Claude…</div>`:""}
+function note(){const m=S.msg;S.msg=null;return m?`<div class="note ${m.k}" role="status">${esc(m.t)}</div>`:""}
+function copyBtn(t){return `<button class="btn sm ghost" data-copy="${esc(t)}">Copy</button>`}
+function view_overview(){return `${steps()}<div class="card"><h3>Welcome to FlowPilot AI</h3><p>Enter a business brief once and Claude generates a strategy, platform-specific content, a 7-day calendar, captions, hashtags, reply drafts and repurposed content. Everything is a <b>draft for you to review</b>. Nothing is posted, sent or scheduled for you.</p><div class="row"><button class="btn" data-go="builder">Start a new campaign</button><button class="btn sec" id="demoBtn">Load Morrow &amp; Co. demo brief</button></div></div>
+<div class="note n-info">Using the AI features requires a Claude account and counts toward your own Claude usage limits. Not signed in or viewing outside claude.ai? The AI buttons will explain what is missing.</div>
+<div class="grid"><div class="card"><h3>1. Brief → Strategy</h3>Fill the Campaign Builder, then generate your strategy.</div><div class="card"><h3>2. Content → Calendar</h3>Platform-specific posts and a 7-day plan, with per-day regeneration.</div><div class="card"><h3>3. Tools → Export</h3>Captions, hashtags, replies, repurposing, then download TXT, CSV or JSON.</div></div>`}
+function view_builder(){const b=B()||{platforms:["Facebook","Instagram"],lang:"English",tone:"Friendly",duration:"7 days"};
+const f=(id,l,ph,ta)=>`<label for="${id}">${l}</label>${ta?`<textarea id="${id}" placeholder="${ph}">${esc(b[id]||"")}</textarea>`:`<input id="${id}" placeholder="${ph}" value="${esc(b[id]||"")}">`}<div class="msg" id="e_${id}"></div>`;
+const sel=(id,l,o)=>`<label for="${id}">${l}</label><select id="${id}">${o.map(x=>`<option ${b[id]===x?"selected":""}>${x}</option>`).join("")}</select>`;
+return `${steps()}${S.demo?'<span class="badge demo">Demo brief loaded</span>':''}<div class="card"><div class="grid"><div>${f("name","Business name *","e.g. My Shop")}${f("industry","Industry *","e.g. Fashion retail")}${f("product","Product or service *","What you sell")}${f("desc","Product description *","1–2 sentences",1)}${f("audience","Target audience *","Who are they?")}${f("market","Target country or market *","e.g. Dhaka, Bangladesh")}</div>
+<div>${f("objective","Marketing objective *","e.g. Grow awareness")}<label>Social platforms * (pick at least one)</label><div class="chips" id="plats">${PLATS.map(p=>`<span class="chip ${b.platforms.includes(p)?"on":""}" data-plat="${p}" role="button" tabindex="0">${p}</span>`).join("")}</div><div class="msg" id="e_plats"></div>${sel("lang","Preferred language",LANGS)}${sel("tone","Brand tone",["Friendly","Professional","Warm and premium","Playful","Bold","Educational"])}${sel("duration","Campaign duration",["7 days","14 days","30 days"])}${f("offer","Special offer or discount (optional)","e.g. 10% off")}${f("cta","Call-to-action preference (optional)","e.g. Order today")}</div></div>
+<div class="row" style="margin-top:12px"><button class="btn" id="genAll">Generate full campaign</button><button class="btn sec" id="genStrat">Strategy only</button><button class="btn ghost" id="demoBtn">Load demo brief</button></div></div>${note()}${loading("strategy")}${loading("content")}${loading("calendar")}${strategyHTML()}`}
+function strategyHTML(){const s=S.strategy;if(!s)return"";const k=(l,v)=>`<div class="kv"><b>${l}</b>${esc(flat(v))}</div>`;
+return `<div class="card"><div class="row" style="justify-content:space-between"><h3>Campaign strategy ${S.demo?'<span class="badge demo">AI output from demo brief</span>':''}</h3><span>${copyBtn(flat(s))}<button class="btn sm sec" id="genStrat2">Regenerate</button></span></div>${k("Campaign overview",s.overview)}${k("Target audience analysis",s.audience)}${k("Marketing positioning",s.positioning)}${k("Main campaign message",s.message)}${k("Content strategy",s.contentStrategy)}${k("Content pillars",(s.pillars||[]).map(x=>"• "+x))}${k("Suggested objectives",(s.objectives||[]).map(x=>"• "+x))}</div>`}
+function view_studio(){if(!B())return needBrief();const c=S.content;
+return `${steps()}<div class="row" style="margin-bottom:12px"><button class="btn" id="genContent">${c?"Regenerate content":"Generate content"}</button></div>${note()}${loading("content")}${c?Object.entries(c).map(([p,v])=>`<div class="card"><h3>${esc(p)}</h3>${Object.entries(v||{}).map(([k,x])=>`<div class="kv"><b>${esc(k)}</b><pre class="out">${esc(flat(x))}</pre></div>`).join("")}${copyBtn(p+"\n"+flat(v))}</div>`).join(""):'<div class="note n-info">No content yet. Generate it from your brief.</div>'}`}
+function view_calendar(){if(!B())return needBrief();const c=S.calendar;
+return `${steps()}<div class="row" style="margin-bottom:12px"><button class="btn" id="genCal">${c?"Regenerate all 7 days":"Generate 7-day calendar"}</button></div>${note()}${loading("calendar")}${c?`<div class="cal">${c.map((d,i)=>`<div class="card day"><b>${esc(d.day)}</b> · ${esc(d.platform)} <span class="pill">${esc(d.type)}</span>${S.busy["day"+i]?loading("day"+i):`<h3 style="margin-top:6px">${esc(d.topic)}</h3><small>${esc(d.caption)}</small><div class="kv"><b>Visual</b>${esc(d.visual)}</div><div class="kv"><b>Objective</b>${esc(d.objective)}</div><div class="kv"><b>CTA</b>${esc(d.cta)}</div>`}<div class="row"><button class="btn sm sec" data-regen="${i}">Regenerate day</button></div></div>`).join("")}</div>`:'<div class="note n-info">No calendar yet.</div>'}`}
+function toolView(key,title,fields,btn,items,renderItem){return `<div class="card"><h3>${title}</h3>${fields}<button class="btn" id="${btn}" style="margin-top:12px">Generate</button></div>${note()}${loading(key)}${items||""}`}
+const tf=(id,l,ph)=>`<label for="${id}">${l}</label><input id="${id}" placeholder="${ph}" value="${esc(S["v_"+id]||"")}"><div class="msg" id="e_${id}"></div>`;
+const ts=(id,l,o)=>`<label for="${id}">${l}</label><select id="${id}">${o.map(x=>`<option ${S["v_"+id]===x?"selected":""}>${x}</option>`).join("")}</select>`;
+const list=(a,title)=>a?`<div class="card"><h3>${title}</h3>${a.map(x=>`<div class="kv"><b>${esc(x.label||"")}</b><pre class="out">${esc(x.text||flat(x))}</pre>${copyBtn(x.text||flat(x))}</div>`).join("")}</div>`:"";
+function view_captions(){return toolView("captions","Caption Generator",tf("ctopic","Topic","e.g. New seasonal menu")+ts("cplat","Platform",PLATS)+ts("ctone","Tone",["Friendly","Professional","Playful","Bold","Inspiring"])+ts("clang","Language",LANGS)+ts("clen","Length",["Short","Medium","Long"]),"genCap",list(S.captions,"Caption variations"))}
+function view_hashtags(){const b=B();return toolView("hashtags","Hashtag Assistant",tf("hcat","Business category","e.g. Specialty coffee")+tf("hprod","Product","e.g. Cold brew")+tf("haud","Audience","e.g. Students")+tf("hloc","Marketing location","e.g. Dhaka")+ts("hplat","Platform",PLATS),"genHash",S.hashtags?`<div class="card"><h3>Hashtag sets</h3><div class="note n-info">Hashtags help discovery but do not guarantee views or rankings.</div>${Object.entries(S.hashtags).map(([k,v])=>`<div class="kv"><b>${esc(k)}</b>${esc(flat(v).replace(/\n/g," "))}<div>${copyBtn(flat(v).replace(/\n/g," "))}</div></div>`).join("")}</div>`:"")}
+function view_replies(){return toolView("replies","AI Reply Assistant <span class='badge'>Drafts only</span>",`<div class="note n-info">These are reply drafts. FlowPilot never sends messages. Copy and post them yourself.</div><label for="rmsg">Customer comment or message</label><textarea id="rmsg" placeholder="Paste a customer comment">${esc(S.v_rmsg||"")}</textarea><div class="msg" id="e_rmsg"></div>`+ts("rlang","Reply language",["English","Bangla"]),"genRep",list(S.replies,"Reply drafts"))}
+function view_repurpose(){return ""}
+function view_export(){const has=S.strategy||S.content||S.calendar||S.captions||S.replies;const bt=(id,l,d)=>`<button class="btn ${d?"":"sec"}" data-exp="${id}">${l}</button>`;
+return `${note()}<div class="card"><h3>Export Center</h3><p>Saves what you have generated this session. Your browser asks you to confirm each download.</p>${has?"":'<div class="note n-info">Nothing to export yet. Generate something first.</div>'}
+<div class="kv"><b>Complete campaign</b><div class="row">${bt("all.txt","TXT")}${bt("all.json","JSON")}</div></div><div class="kv"><b>Content calendar</b><div class="row">${bt("cal.csv","CSV")}${bt("cal.json","JSON")}</div></div><div class="kv"><b>Individual captions</b><div class="row">${bt("cap.txt","TXT")}${bt("cap.csv","CSV")}</div></div><div class="kv"><b>Reply templates</b><div class="row">${bt("rep.txt","TXT")}${bt("rep.json","JSON")}</div></div></div>
+${S.demo?'<div class="note n-info">Exports from the demo brief are labelled as demonstration content.</div>':""}`}
+function view_about(){return `<div class="card"><h3>About FlowPilot AI</h3><p>A self-initiated AI automation project. Concept, requirements, creative direction and testing by MD Nafis Musfiq Siam, developed with Claude AI assistance. Not paid client work.</p><h3>How AI works here</h3><p>Generation uses Claude through the Claude Artifacts runtime. No API key is needed. Each viewer uses their own Claude account and usage limits.</p><h3>Honest limits</h3><ul><li>Nothing is posted, scheduled or messaged automatically.</li><li>Results live in this session only; export to keep them.</li><li>AI drafts need human review. Hashtags do not guarantee reach.</li></ul></div>`}
+function needBrief(){return `<div class="note n-info">Create or load a campaign brief first.</div><button class="btn" data-go="builder">Open Campaign Builder</button>`}
+/* repurpose lives under Content Studio */
+const studioRepurpose=()=>toolView("repurpose","Content Repurposing",`<label for="rorig">Original content</label><textarea id="rorig" placeholder="Paste one piece of content">${esc(S.v_rorig||"")}</textarea><div class="msg" id="e_rorig"></div>`,"genRepu",list(S.repurpose,"Repurposed versions"));
+/* ---------- render ---------- */
+function render(keep){const v=S.view;$("#title").textContent=(VIEWS.find(x=>x[0]===v)||[])[1];
+$("#nav").innerHTML=VIEWS.map(([k,l])=>`<button class="${k===v?"on":""}" data-go="${k}">${l}</button>`).join("");
+$("#status").innerHTML=sample?"":'<span class="badge">AI unavailable in this view</span>';
+const y=window.scrollY;let h=({overview:view_overview,builder:view_builder,studio:()=>view_studio()+studioRepurpose(),calendar:view_calendar,captions:view_captions,hashtags:view_hashtags,replies:view_replies,export:view_export,about:view_about})[v]();
+$("#view").innerHTML=h;bind();if(keep)window.scrollTo(0,y)}
+const val=(id)=>{const e=$("#"+id);return e?e.value.trim():""};
+function need(ids){let ok=true;ids.forEach(([id,l])=>{const e=$("#"+id),m=$("#e_"+id);const bad=!val(id);if(e)e.classList.toggle("bad",bad);if(m)m.textContent=bad?l+" is required.":"";if(bad)ok=false;});return ok}
+function readBrief(){const g=id=>val(id);return {name:g("name"),industry:g("industry"),product:g("product"),desc:g("desc"),audience:g("audience"),market:g("market"),objective:g("objective"),platforms:[...document.querySelectorAll(".chip.on")].map(c=>c.dataset.plat),lang:g("lang"),tone:g("tone"),duration:g("duration"),offer:g("offer"),cta:g("cta")}}
+function submitBrief(fn){const ok=need([["name","Business name"],["industry","Industry"],["product","Product or service"],["desc","Description"],["audience","Audience"],["market","Market"],["objective","Objective"]]);const b=readBrief();if(!b.platforms.length){$("#e_plats").textContent="Choose at least one platform.";return}else $("#e_plats").textContent="";if(!ok){setMsg("Please complete the highlighted fields.","n-err");$("#view").insertAdjacentHTML("afterbegin",note());return}
+if(S.demo&&JSON.stringify({...b})!==JSON.stringify(DEMO_BRIEF))S.demo=false;S.brief=b;fn()}
+function bind(){const V=$("#view");
+V.querySelectorAll("[data-go]").forEach(e=>e.onclick=()=>{S.view=e.dataset.go;render();scrollTo(0,0)});
+document.querySelectorAll("#nav [data-go]").forEach(e=>e.onclick=()=>{S.view=e.dataset.go;render();scrollTo(0,0)});
+V.querySelectorAll("[data-plat]").forEach(c=>{c.onclick=()=>c.classList.toggle("on");c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click()}}});
+V.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.copy);b.textContent="Copied ✓"}catch(e){const t=document.createElement("textarea");t.value=b.dataset.copy;document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}t.remove();b.textContent=ok?"Copied ✓":"Copy failed"}setTimeout(()=>b.textContent="Copy",1500)});
+V.querySelectorAll("[data-regen]").forEach(b=>b.onclick=()=>regenDay(+b.dataset.regen));
+V.querySelectorAll("[data-exp]").forEach(b=>b.onclick=()=>doExport(b.dataset.exp));
+const on=(id,fn)=>{const e=$("#"+id);if(e)e.onclick=fn};
+document.querySelectorAll("#demoBtn").forEach(e=>e.onclick=()=>{S={...S,brief:{...DEMO_BRIEF},demo:true,strategy:null,content:null,calendar:null,view:"builder"};render()});
+on("genAll",()=>submitBrief(fullFlow));on("genStrat",()=>submitBrief(gStrategy));on("genStrat2",gStrategy);on("genContent",gContent);on("genCal",gCalendar);
+const keep=ids=>ids.forEach(i=>S["v_"+i]=val(i));
+on("genCap",()=>{keep(["ctopic","cplat","ctone","clang","clen"]);if(!need([["ctopic","Topic"]]))return;run("captions",async()=>{S.captions=await ai(`Write 4 caption variations. Topic: ${val("ctopic")}. Platform: ${val("cplat")}. Tone: ${val("ctone")}. Language: ${val("clang")}. Length: ${val("clen")}.${B()?"\nBusiness context:\n"+briefText(B()):""}\nReturn JSON array of {"label":str,"text":str}`,"captions")})});
+on("genHash",()=>{keep(["hcat","hprod","haud","hloc","hplat"]);if(!need([["hcat","Category"],["hprod","Product"]]))return;run("hashtags",async()=>{S.hashtags=await ai(`Hashtags for category ${val("hcat")}, product ${val("hprod")}, audience ${val("haud")||"general"}, location ${val("hloc")||"unspecified"}, platform ${val("hplat")}. Return JSON {"Broad reach":[8 tags],"Niche audience":[8],"Product-specific":[6],"Campaign-specific":[5]} with # prefixes.`,"hashtags")})});
+on("genRep",()=>{keep(["rmsg","rlang"]);if(!need([["rmsg","Customer message"]]))return;run("replies",async()=>{S.replies=await ai(`Customer message: """${val("rmsg")}"""\nLanguage: ${val("rlang")}.${B()?"\nBusiness:\n"+briefText(B()):""}\nWrite reply drafts. Return JSON array of {"label":"Friendly"|"Professional"|"Sales-oriented"|"Short"|"Bangla or English alternative","text":str}`,"replies")})});
+on("genRepu",()=>{keep(["rorig"]);if(!need([["rorig","Original content"]]))return;run("repurpose",async()=>{S.repurpose=await ai(`Repurpose this content, keeping its meaning: """${val("rorig")}"""\nReturn JSON array of {"label":"Facebook post"|"Instagram caption"|"LinkedIn post"|"TikTok video script"|"Short promotional message","text":str}`,"repurpose")})});
+}
+/* ---------- export ---------- */
+const csv=rows=>rows.map(r=>r.map(c=>'"'+String(c==null?"":c).replace(/"/g,'""')+'"').join(",")).join("\n");
+function doExport(id){const lab=S.demo?"[DEMONSTRATION CONTENT: generated by Claude from the fictional Morrow & Co. demo brief]\n":"";let data="",name=id;
+const all={brief:S.brief,strategy:S.strategy,content:S.content,calendar:S.calendar,captions:S.captions,replies:S.replies,repurposed:S.repurpose,demo:S.demo,generatedBy:"FlowPilot AI with Claude. Drafts for human review."};
+const capList=[...(S.captions||[]).map(c=>["Caption",c.label,c.text]),...Object.entries(S.content||{}).flatMap(([p,v])=>[].concat(v.captions||[]).map(t=>[p,"Caption",flat(t)]))];
+if(id==="all.txt")data=lab+"FLOWPILOT AI CAMPAIGN\n\n"+(B()?briefText(B()):"")+"\n\n=== STRATEGY ===\n"+flat(S.strategy||"")+"\n\n=== CONTENT ===\n"+flat(S.content||"")+"\n\n=== CALENDAR ===\n"+flat(S.calendar||"")+"\n\n=== CAPTIONS ===\n"+flat(S.captions||"")+"\n\n=== REPLY DRAFTS ===\n"+flat(S.replies||"");
+else if(id==="all.json")data=JSON.stringify(all,null,2);
+else if(id==="cal.csv")data=csv([["Day","Platform","Type","Topic","Caption summary","Visual","Objective","CTA"],...(S.calendar||[]).map(d=>[d.day,d.platform,d.type,d.topic,d.caption,d.visual,d.objective,d.cta])]);
+else if(id==="cal.json")data=JSON.stringify(S.calendar||[],null,2);
+else if(id==="cap.txt")data=lab+(S.captions||[]).map(c=>c.label+"\n"+c.text).concat(Object.entries(S.content||{}).map(([p,v])=>p+" captions\n"+flat(v.captions||""))).join("\n\n");
+else if(id==="cap.csv")data=csv([["Source","Label","Text"],...(S.captions||[]).map(c=>["Caption Generator",c.label,c.text]),...Object.entries(S.content||{}).flatMap(([p,v])=>[].concat(v.captions||[]).map(t=>[p,"Campaign caption",flat(t)]))]);
+else if(id==="rep.txt")data=lab+(S.replies||[]).map(c=>c.label+"\n"+c.text).join("\n\n");
+else if(id==="rep.json")data=JSON.stringify(S.replies||[],null,2);
+const empty=!data.replace(/[\s\[\]{}"nul,]/g,"").length||data==='""'||data==="[]";
+if(!downloads){setMsg("Downloads are unavailable in this view. Open the artifact in claude.ai.","n-err");return render()}
+if(empty||(/csv$/.test(id)&&data.split("\n").length<2)){setMsg("Nothing to export yet for that item. Generate it first.","n-err");return render()}
+const fn={all:"flowpilot-campaign",cal:"flowpilot-calendar",cap:"flowpilot-captions",rep:"flowpilot-replies"}[id.split(".")[0]]+"."+id.split(".")[1];
+downloads.save({filename:fn,data:new Blob([data],{type:"text/plain"})}).then(()=>{setMsg("Saved "+fn,"n-ok");render()}).catch(e=>{setMsg(e.code==="declined"?"Download cancelled.":"Download failed: "+(e.message||e.code),"n-err");render()})}
+render();
+(async()=>{try{sample=await claude.use("sample")}catch(e){}try{downloads=await claude.use("downloads")}catch(e){}render(true)})();
+</script></body></html>
